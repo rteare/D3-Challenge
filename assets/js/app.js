@@ -14,7 +14,7 @@ function makeResponsive() {
     var height = svgHeight - margin.top - margin.bottom;
     
     // Create an SVG wrapper, append an SVG group that will hold our chart, and shift the latter by left and top margins.
-    var svg = d3.select(".chart")
+    var svg = d3.select("#scatter")
       .append("svg")
       .attr("width", svgWidth)
       .attr("height", svgHeight);
@@ -23,7 +23,7 @@ function makeResponsive() {
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
     
     // Import Data
-    d3.csv("data.csv").then(function(stateData) {
+    d3.csv("assets/data/data.csv").then(function(stateData) {
     
         // Parse Data/Cast as numbers
         // ==============================
@@ -35,11 +35,11 @@ function makeResponsive() {
         // Create scale functions
         // ==============================
         var xLinearScale = d3.scaleLinear()
-          .domain([20, d3.max(stateData, d => d.poverty)])
+          .domain([3, d3.max(stateData, d => d.poverty)])
           .range([0, width]);
     
         var yLinearScale = d3.scaleLinear()
-          .domain([0, d3.max(stateData, d => d.healthcare)])
+          .domain([6, d3.max(stateData, d => d.healthcare)])
           .range([height, 0]);
     
         // Create axis functions
@@ -66,7 +66,16 @@ function makeResponsive() {
         .attr("cy", d => yLinearScale(d.healthcare))
         .attr("r", "15")
         .attr("fill", "blue")
-        .attr("opacity", ".5");
+        .attr("opacity", ".7");
+
+        var circlesText = chartGroup.selectAll(".label")
+        .data(stateData)
+        .enter()
+        .append("text")
+        .text(function(d) {return (d.abbr)})
+        .attr("x", d => xLinearScale(d.healthcare)-11)
+        .attr("y", d => yLinearScale(d.poverty)+5)
+        .style('fill','white');
     
         // Initialize tool tip
         // ==============================
@@ -74,8 +83,7 @@ function makeResponsive() {
           .attr("class", "tooltip") // style
           .offset([80, -60]) // placement
           .html(function(d) { // structure/content
-            return (`${d.state}<br>In Poverty (%): ${d.poverty}<br>Lacks Healthcare (%): ${d.healthcare}`);
-          });
+            return (`State: ${d.abbr}<br>Lacks Healthcare (%): ${d.healthcare}<br>In Poverty (%): ${d.poverty}`);          });
     
         // Create tooltip in the chart
         // ==============================
@@ -83,7 +91,7 @@ function makeResponsive() {
     
         // Create event listeners to display and hide the tooltip
         // ==============================
-        circlesGroup.on("click", function(data) {
+        circlesGroup.on("mouseover", function(data) {
           toolTip.show(data, this);
         })
           // onmouseout event
@@ -94,8 +102,8 @@ function makeResponsive() {
         // Create axes labels
         chartGroup.append("text")
           .attr("transform", "rotate(-90)")
-          .attr("y", 0 - margin.left + 40)
-          .attr("x", 0 - (height / 2))
+          .attr("y", 0 - margin.left + 50)
+          .attr("x", 0 - (height*.75))
           .attr("dy", "1em")
           .attr("class", "axisText")
           .text("Lacks Healthcare (%)");
