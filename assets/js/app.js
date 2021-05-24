@@ -38,11 +38,11 @@ function makeResponsive() {
     // Create scale functions
     // ==============================
     var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(stateData, d => d.poverty - 1), d3.max(stateData, d => d.poverty + 1)])
+      .domain([d3.min(stateData, d => d.poverty) - 1, d3.max(stateData, d => d.poverty) + 1])
       .range([0, width]);
       
     var yLinearScale = d3.scaleLinear()
-      .domain([d3.min(stateData, d => d.healthcare - 1), d3.max(stateData, d => d.healthcare + 1)])
+      .domain([0, d3.max(stateData, d => d.healthcare )+10])
       .range([height, 0]);
       
     // Create axis functions
@@ -67,9 +67,10 @@ function makeResponsive() {
       .append("circle")
       .attr("cx", d => xLinearScale(d.poverty))
       .attr("cy", d => yLinearScale(d.healthcare))
-      .attr("r", "12")
+      .attr("r", "10")
       .attr("fill", "teal")
-      .attr("opacity", ".6");
+      .attr("opacity", ".5")
+      .attr("stroke", "white");
       
     var circleText = chartGroup.selectAll(".label")
       .data(stateData)
